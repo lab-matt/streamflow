@@ -30,13 +30,12 @@ def plot_streamflow(dates, flows, sites):
     plt.gcf().autofmt_xdate()
     plt.tight_layout()
     plt.grid(True)
-    plt.show()
+#    plt.show()
 
 
 def summarize(dates, flows, sites):
-    ''' The maximum flow (cfs) and the date and time it occurred
-    The minimum flow (cfs)
-    The average flow (cfs) '''
+    ''' The maximum flow (cfs) and the date and time it occurred '''
+    # formulas to make things simple later on
     max_flow = np.max(flows, axis=0)
     min_flow = np.min(flows, axis=0)
     avg_flow = np.mean(flows, axis=0)
@@ -44,6 +43,7 @@ def summarize(dates, flows, sites):
     max_flow_dates = dates[np.argmax(flows, axis=0)]
     min_flow_dates = dates[np.argmin(flows, axis=0)]
 
+    # iterates i each time through each item in sites
     for i, site in enumerate(sites):
         print(f"Site {site}:")
         print(f"  Max Flow: {max_flow[i]} cfs on {max_flow_dates[i]}")
@@ -51,10 +51,14 @@ def summarize(dates, flows, sites):
         print(f"  Avg Flow: {avg_flow[i]:.2f} cfs\n")
 
 # It should also save the same information to a file named streamflow_summary.csv. You can write the file with open() and write(), or put the results in a pandas DataFrame and use to_csv().'''
-
+    # opens the file
     with open('streamflow_summary.csv', 'w') as f:
+        # writing the header row
         f.write('Site,Max Flow (cfs),Max Flow Date,Min Flow (cfs),Min Flow Date,Avg Flow (cfs)\n')
+
+        # iterates i each time through each item in sites
         for i, site in enumerate(sites):
+            # writing to the file
             f.write(f"{site},{max_flow[i]},{max_flow_dates[i]},{min_flow[i]},{min_flow_dates[i]},{avg_flow[i]:.2f}\n")
 
 
@@ -62,6 +66,16 @@ def summarize(dates, flows, sites):
 # Main program
 sites = ["10163000", "10155200", "10155500", "10154200", "10155000"]
 dates, flows = load_streamflow("June-2021-Provo-River-Streamflow-Rates.csv")
-plot_streamflow(dates, flows, sites)
+#plot_streamflow(dates, flows, sites)
 plt.savefig("provo_streamflow.png", dpi=150, bbox_inches="tight")
 summarize(dates, flows, sites)
+
+# asks user for input
+threshold = float(input("Enter a flow threshold in cfs: "))
+# iterates through every site, each time i is iterated and is the index for the right row
+for i, site in enumerate(sites):
+    # gets a count of how many readings are above the threshold
+    readings_above = np.sum(flows[:, i] > threshold)
+    # makes it hourly
+    hours_above = readings_above * 0.25
+    print(f"Site {site}: flow was above the threshold for {hours_above:.2f} hours")
