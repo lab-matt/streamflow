@@ -1,7 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-array1 = np.genfromtxt('June-2021-Provo-River-Streamflow-Rates.csv',delimiter=',',dtype=str,skip_header=1)
+array1 = np.genfromtxt('June-2021-Provo-River-Streamflow-Rates.csv',
+                       delimiter=',',
+                       dtype=str,
+                       skip_header=1)
 
 x = array1[:,0]
 y_1 = array1[:,1].astype(float)
